@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physique quantique — Wikipédia</title>
+    <link rel="icon" href="https://fr.wikipedia.org/static/favicon/wikipedia.ico">
+    <style>
+        /* DESIGN WIKIPEDIA (LEURRE) */
+        body, html { margin: 0; padding: 0; font-family: sans-serif; height: 100%; background: #fff; overflow-x: hidden; color: #202122; }
+        #wiki-page { padding: 40px; max-width: 900px; margin: auto; line-height: 1.6; }
+        .premium-btn { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 5px 10px; cursor: pointer; float: right; font-size: 11px; color: #54595d; border-radius: 2px; }
+        h1 { font-family: 'Linux Libertine','Georgia','Times',serif; font-weight: normal; border-bottom: 1px solid #a2a9b1; padding-bottom: 5px; }
+
+        /* INTERFACE PROXY (CHROME CLONE) */
+        #proxy-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #202124; flex-direction: column; z-index: 9999; }
+        
+        /* SYSTÈME D'ONGLETS */
+        .tab-container { display: flex; background: #202124; padding: 8px 10px 0; gap: 4px; align-items: center; overflow-x: auto; border-bottom: 1px solid #3c4043; }
+        .tab { background: #35363a; color: #bdc1c6; padding: 8px 15px; border-radius: 8px 8px 0 0; font-size: 12px; min-width: 120px; max-width: 180px; cursor: pointer; white-space: nowrap; overflow: hidden; position: relative; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; }
+        .tab.active { background: #dfe1e5; color: #3c4043; border: 1px solid #dfe1e5; }
+        .close-tab { margin-left: 10px; font-size: 14px; opacity: 0.6; }
+        .close-tab:hover { opacity: 1; color: red; }
+        .new-tab-btn { color: white; font-size: 22px; cursor: pointer; padding: 0 12px; margin-bottom: 4px; }
+
+        /* BARRE D'ADRESSE */
+        .address-bar { background: #dfe1e5; padding: 8px; display: flex; gap: 12px; align-items: center; border-bottom: 1px solid #ccc; }
+        #url-input { flex: 1; border-radius: 20px; border: 1px solid #ccc; padding: 8px 18px; outline: none; font-size: 14px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
+        .nav-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 0 5px; opacity: 0.7; }
+        .nav-btn:hover { opacity: 1; }
+        
+        /* ZONE DE CONTENU */
+        #iframes-container { flex: 1; background: white; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; display: none; position: absolute; top:0; left:0; }
+        iframe.active { display: block; }
+
+        /* BOUTON PANIQUE INVISIBLE (COIN BAS DROITE) */
+        .panic-hotspot { position: fixed; bottom: 0; right: 0; width: 10px; height: 10px; z-index: 10000; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="wiki-page">
+        <button class="premium-btn" onclick="activateFurtif()">Contribuer (Premium)</button>
+        <h1>Physique quantique</h1>
+        <p><i>Un article de Wikipédia, l'encyclopédie libre.</i></p>
+        <p>La <b>physique quantique</b> est l'appellation générale d'un ensemble de théories physiques nées au XXe siècle qui, comme la théorie de la relativité, marquent une rupture avec ce que l'on appelle maintenant la physique classique.</p>
+        <p>Ce domaine décrit les phénomènes fondamentaux à l'œuvre dans les systèmes physiques, en particulier à l'échelle atomique et subatomique.</p>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Schrodingers_cat.svg/300px-Schrodingers_cat.svg.png" style="float:right; margin:10px; border:1px solid #ccc;">
+        <p>Elle a permis d'élucider certaines propriétés du rayonnement électromagnétique. Elle se divise aujourd'hui en plusieurs disciplines...</p>
+    </div>
+
+    <div id="proxy-ui">
+        <div class="tab-container" id="tabs">
+            <div class="new-tab-btn" onclick="addNewTab()">+</div>
+        </div>
+        <div class="address-bar">
+            <button class="nav-btn" onclick="panic()" title="Retour au Wiki">🏠</button>
+            <input type="text" id="url-input" placeholder="Rechercher sur DuckDuckGo ou saisir une adresse URL..." onkeypress="handleKey(event)">
+        </div>
+        <div id="iframes-container">
+            </div>
+    </div>
+
+    <div class="panic-hotspot" onclick="panic()"></div>
+
+    <script>
+        // Moteur public Ultraviolet stable
+        const PROXY_ENGINE = "https://uv.holyublock.com/service/";
+        let tabCount = 0;
+
+        // ÉTAPE 1: ACTIVER LE MODE FURTIF (ABOUT:BLANK)
+        function activateFurtif() {
+            let win = window.open('about:blank', '_blank');
+            if (!win) {
+                alert("Erreur : Autorise les fenêtres surgissantes dans les réglages Safari de ton iPad !");
+                return;
+            }
+            
+            // On clone tout le code actuel dans la page about:blank
+            win.document.write(document.documentElement.innerHTML);
+            win.document.close();
+            
+            // Dans la nouvelle fenêtre, on bascule direct sur l'interface Proxy
+            win.document.getElementById('wiki-page').style.display = 'none';
+            win.document.getElementById('proxy-ui').style.display = 'flex';
+            win.document.title = "Google Chrome";
+            
+            // On initialise le premier onglet dans la nouvelle fenêtre
+            win.addNewTab();
+
+            // On redirige la page Netlify d'origine vers le vrai Wikipédia pour effacer les traces
+            window.location.replace("https://fr.wikipedia.org/wiki/Physique_quantique");
+        }
+
+        // ÉTAPE 2: GESTION DES ONGLETS
+        function addNewTab() {
+            tabCount++;
+            const id = 'tab-' + tabCount;
+            
+            // Création de l'onglet visuel
+            const tab = document.createElement('div');
+            tab.className = 'tab';
+            tab.id = 'btn-' + id;
+            tab.innerHTML = `<span>Nouvel onglet</span><span class="close-tab" onclick="removeTab(event, '${id}')">×</span>`;
+            tab.onclick = () => switchTab(id);
+            
+            // Création de l'iframe (le site)
+            const iframe = document.createElement('iframe');
+            iframe.id = id;
+            iframe.src = 'https://duckduckgo.com'; // Page de démarrage vide
+            
+            document.getElementById('tabs').insertBefore(tab, document.querySelector('.new-tab-btn'));
+            document.getElementById('iframes-container').appendChild(iframe);
+            
+            switchTab(id);
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('iframe').forEach(i => i.classList.remove('active'));
+            
+            document.getElementById('btn-' + id).classList.add('active');
+            document.getElementById(id).classList.add('active');
+            
+            // On vide la barre d'adresse pour le nouvel onglet (ou on met l'URL si on veut être précis)
+            document.getElementById('url-input').value = "";
+        }
+
+        function removeTab(e, id) {
+            e.stopPropagation();
+            document.getElementById('btn-' + id).remove();
+            document.getElementById(id).remove();
+            
+            const remainingTabs = document.querySelectorAll('.tab');
+            if (remainingTabs.length > 0) {
+                switchTab(remainingTabs[remainingTabs.length - 1].id.replace('btn-', ''));
+            } else {
+                addNewTab();
+            }
+        }
+
+        // ÉTAPE 3: NAVIGATION
+        function handleKey(e) {
+            if (e.key === 'Enter') {
+                let input = document.getElementById('url-input').value.trim();
+                if (!input) return;
+
+                let target = (input.includes('.') && !input.includes(' ')) ? 
+                             (input.startsWith('http') ? input : 'https://' + input) : 
+                             'https://duckduckgo.com/?q=' + encodeURIComponent(input);
+                
+                let activeIframe = document.querySelector('iframe.active');
+                if (activeIframe) {
+                    activeIframe.src = PROXY_ENGINE + btoa(target);
+                    // Mise à jour du titre de l'onglet
+                    document.querySelector('.tab.active span').textContent = input.substring(0, 12) + "...";
+                }
+            }
+        }
+
+        // BOUTON PANIQUE
+        function panic() {
+            if (confirm("Fermer la session sécurisée ?")) {
+                window.close(); // Ferme l'onglet about:blank
+            }
+        }
+
+        // Raccourci clavier Panique (Echap)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') panic();
+        });
+    </script>
+</body>
+</html>
