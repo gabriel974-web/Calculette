@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculatrice Scientifique</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/234/234158.png">
+    <style>
+        body { background: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; }
+        .calc { background: #333; padding: 20px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); width: 320px; }
+        /* L'écran de la calculatrice sert de barre de recherche */
+        #display { width: 100%; height: 50px; background: #a7af7c; border: none; margin-bottom: 20px; text-align: right; padding: 10px; box-sizing: border-box; font-family: 'Courier New', monospace; font-size: 20px; font-weight: bold; border-radius: 5px; }
+        .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        button { padding: 15px; border: none; border-radius: 5px; background: #555; color: white; font-size: 18px; cursor: pointer; }
+        button:hover { background: #666; }
+        .operator { background: #f39c12; }
+        .equal { background: #e67e22; grid-column: span 2; }
+    </style>
+</head>
+<body>
+
+    <div class="calc">
+        <input type="text" id="display" placeholder="0" onkeypress="checkEnter(event)">
+        
+        <div class="buttons">
+            <button>7</button><button>8</button><button>9</button><button class="operator">/</button>
+            <button>4</button><button>5</button><button>6</button><button class="operator">*</button>
+            <button>1</button><button>2</button><button>3</button><button class="operator">-</button>
+            <button>0</button><button>.</button><button class="equal" onclick="launchProxy()">=</button>
+            <button class="operator">+</button>
+        </div>
+    </div>
+
+    <script>
+        function checkEnter(e) { if (e.key === 'Enter') launchProxy(); }
+
+        function launchProxy() {
+            let input = document.getElementById('display').value;
+            
+            // Si c'est un calcul mathématique simple, on laisse faire (optionnel)
+            // Mais si ça ressemble à une recherche ou une URL, on lance le proxy
+            if (input.includes('.') || isNaN(input)) {
+                
+                let target = (input.includes('.') && !input.includes(' ')) ? 
+                    (input.startsWith('http') ? input : 'https://' + input) : 
+                    'https://duckduckgo.com/?q=' + encodeURIComponent(input);
+
+                // Moteur Ultraviolet Public
+                let proxyUrl = "https://uv.holyublock.com/service/" + btoa(target);
+
+                // MODE FURTIF (About:Blank)
+                let win = window.open('about:blank', '_blank');
+                win.document.title = "Calculatrice Scientifique"; // L'onglet restera discret
+                
+                let iframe = win.document.createElement('iframe');
+                iframe.style = "position:fixed; top:0; left:0; width:100%; height:100%; border:none; margin:0; padding:0;";
+                iframe.src = proxyUrl;
+                
+                win.document.body.appendChild(iframe);
+
+                // On remet la calculatrice à zéro sur l'onglet principal
+                document.getElementById('display').value = "0";
+            } else {
+                // Si c'est juste un chiffre, on peut simuler un calcul pour rester crédible
+                document.getElementById('display').value = eval(input) || "0";
+            }
+        }
+    </script>
+</body>
+</html>
