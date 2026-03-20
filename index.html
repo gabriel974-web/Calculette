@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physique quantique — Wikipédia</title>
+    <link rel="icon" href="https://fr.wikipedia.org/static/favicon/wikipedia.ico">
+    <style>
+        /* DESIGN WIKIPEDIA (LEURRE) */
+        body, html { margin: 0; padding: 0; font-family: sans-serif; height: 100%; background: #fff; overflow-x: hidden; color: #202122; }
+        #wiki-page { padding: 40px; max-width: 900px; margin: auto; line-height: 1.6; }
+        .premium-btn { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 5px 10px; cursor: pointer; float: right; font-size: 11px; color: #54595d; border-radius: 2px; }
+        h1 { font-family: 'Linux Libertine','Georgia','Times',serif; font-weight: normal; border-bottom: 1px solid #a2a9b1; padding-bottom: 5px; }
+
+        /* INTERFACE PROXY (CHROME CLONE) */
+        #proxy-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #202124; flex-direction: column; z-index: 9999; }
+        
+        /* SYSTÈME D'ONGLETS */
+        .tab-container { display: flex; background: #202124; padding: 8px 10px 0; gap: 4px; align-items: center; overflow-x: auto; border-bottom: 1px solid #3c4043; }
+        .tab { background: #35363a; color: #bdc1c6; padding: 8px 15px; border-radius: 8px 8px 0 0; font-size: 12px; min-width: 120px; max-width: 180px; cursor: pointer; white-space: nowrap; overflow: hidden; display: flex; justify-content: space-between; align-items: center; }
+        .tab.active { background: #dfe1e5; color: #3c4043; }
+        .close-tab { margin-left: 10px; font-size: 14px; }
+        .new-tab-btn { color: white; font-size: 22px; cursor: pointer; padding: 0 12px; }
+
+        /* BARRE D'ADRESSE */
+        .address-bar { background: #dfe1e5; padding: 8px; display: flex; gap: 12px; align-items: center; }
+        #url-input { flex: 1; border-radius: 20px; border: 1px solid #ccc; padding: 8px 18px; outline: none; font-size: 14px; }
+        .nav-btn { background: none; border: none; font-size: 18px; cursor: pointer; }
+        
+        /* ZONE DE CONTENU */
+        #iframes-container { flex: 1; background: white; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; display: none; position: absolute; top:0; left:0; }
+        iframe.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="wiki-page">
+        <button class="premium-btn" onclick="activateFurtif()">Contribuer (Premium)</button>
+        <h1>Physique quantique</h1>
+        <p><i>Un article de Wikipédia, l'encyclopédie libre.</i></p>
+        <p>La physique quantique est l'appellation générale d'un ensemble de théories physiques nées au XXe siècle...</p>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Schrodingers_cat.svg/300px-Schrodingers_cat.svg.png" style="float:right; margin:10px;">
+    </div>
+
+    <div id="proxy-ui">
+        <div class="tab-container" id="tabs">
+            <div class="new-tab-btn" onclick="addNewTab()">+</div>
+        </div>
+        <div class="address-bar">
+            <button class="nav-btn" onclick="location.reload()">🏠</button>
+            <input type="text" id="url-input" placeholder="Rechercher avec Scramjet ou URL..." onkeypress="handleKey(event)">
+        </div>
+        <div id="iframes-container"></div>
+    </div>
+
+    <script>
+        // MOTEUR SCRAMJET PUBLIC (Remplace si bloqué)
+        const SCRAMJET_ENGINE = "https://flow-os.com/sj/"; 
+
+        function activateFurtif() {
+            let win = window.open('about:blank', '_blank');
+            if (!win) {
+                alert("⚠️ Active les fenêtres surgissantes dans tes réglages Safari !");
+                return;
+            }
+            win.document.write(document.documentElement.innerHTML);
+            win.document.close();
+            win.document.getElementById('wiki-page').style.display = 'none';
+            win.document.getElementById('proxy-ui').style.display = 'flex';
+            win.document.title = "Google Chrome";
+            win.addNewTab();
+            window.location.replace("https://fr.wikipedia.org/wiki/Physique_quantique");
+        }
+
+        let tabCount = 0;
+        function addNewTab() {
+            tabCount++;
+            const id = 'tab-' + tabCount;
+            const tab = document.createElement('div');
+            tab.className = 'tab';
+            tab.id = 'btn-' + id;
+            tab.innerHTML = `<span>Onglet ${tabCount}</span><span class="close-tab" onclick="removeTab(event, '${id}')">×</span>`;
+            tab.onclick = () => switchTab(id);
+            const iframe = document.createElement('iframe');
+            iframe.id = id;
+            iframe.src = 'about:blank';
+            document.getElementById('tabs').insertBefore(tab, document.querySelector('.new-tab-btn'));
+            document.getElementById('iframes-container').appendChild(iframe);
+            switchTab(id);
+        }
+
+        function handleKey(e) {
+            if (e.key === 'Enter') {
+                let input = document.getElementById('url-input').value.trim();
+                if (!input) return;
+
+                let targetUrl = "";
+                if (input.includes('.') && !input.includes(' ')) {
+                    targetUrl = input.startsWith('http') ? input : 'https://' + input;
+                } else {
+                    targetUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(input);
+                }
+
+                let activeIframe = document.querySelector('iframe.active');
+                if (activeIframe) {
+                    // FORMAT SCRAMJET : L'URL est encodée puis ajoutée au moteur
+                    // On utilise encodeURIComponent pour Scramjet
+                    activeIframe.src = SCRAMJET_ENGINE + encodeURIComponent(targetUrl);
+                    document.querySelector('.tab.active span').textContent = input.substring(0, 12) + "..";
+                }
+            }
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('iframe').forEach(i => i.classList.remove('active'));
+            document.getElementById('btn-' + id).classList.add('active');
+            document.getElementById(id).classList.add('active');
+        }
+
+        function removeTab(e, id) {
+            e.stopPropagation();
+            document.getElementById('btn-' + id).remove();
+            document.getElementById(id).remove();
+            const left = document.querySelectorAll('.tab');
+            if (left.length > 0) switchTab(left[left.length-1].id.replace('btn-',''));
+            else addNewTab();
+        }
+    </script>
+</body>
+</html>
